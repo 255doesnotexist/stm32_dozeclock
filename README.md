@@ -63,8 +63,10 @@
 
 请观看以下演示视频以了解项目的实际运行效果：
 
+<a href="https://github.com/255doesnotexist/stm32_dozeclock/raw/refs/heads/main/sample.mp4">sample.mp4</a>
+
 <video width="640" height="480" controls>
-  <source src="sample.mp4" type="video/mp4">
+  <source src="https://github.com/255doesnotexist/stm32_dozeclock/raw/refs/heads/main/sample.mp4" type="video/mp4">
   Your browser does not support the video tag.
 </video>
 
