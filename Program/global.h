@@ -57,7 +57,7 @@ extern DozeCountingButtonState dozeButtonState;
 extern DozeCountingButtonState pauseButtonState;
 
 extern uint8_t dozeMinutes;
-extern uint8_t dozeSeconds; // Ä¬ÈÏ5·ÖÖÓ
+extern uint8_t dozeSeconds; // Ä¬ÈÏ5Ãë
 extern uint8_t dozeMilliseconds;
 
 extern uint8_t countdownMinutes;

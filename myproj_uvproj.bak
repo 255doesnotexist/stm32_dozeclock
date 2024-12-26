@@ -169,12 +169,12 @@
             <UseExternalTool>0</UseExternalTool>
             <RunIndependent>0</RunIndependent>
             <UpdateFlashBeforeDebugging>1</UpdateFlashBeforeDebugging>
-            <Capability>0</Capability>
-            <DriverSelection>-1</DriverSelection>
+            <Capability>1</Capability>
+            <DriverSelection>4096</DriverSelection>
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>BIN\UL2CM3.DLL</Flash2>
-          <Flash3></Flash3>
+          <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -417,6 +417,11 @@
               <FileType>1</FileType>
               <FilePath>.\Program\stm32f4xx_it.c</FilePath>
             </File>
+            <File>
+              <FileName>global.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Program\global.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -539,6 +544,11 @@
               <FileName>font.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Driver\font.h</FilePath>
+            </File>
+            <File>
+              <FileName>beep.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Driver\beep.c</FilePath>
             </File>
           </Files>
         </Group>

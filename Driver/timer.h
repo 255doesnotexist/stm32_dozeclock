@@ -15,4 +15,7 @@
 
 //函数声明
 void Tim2Init(void); /*初始化函数*/
-void Tim3Init(uint16_t time);  /*初始化函数*/
+void Tim3Init(void);  /*初始化函数*/
+extern uint16_t otime;
+extern uint16_t frqcount;
+#define SetFreq(freq) frqcount=0;otime=(10000.0/(0.0874676873*(freq)))

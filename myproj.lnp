@@ -7,6 +7,7 @@
 ".\timer.o"
 ".\uart.o"
 ".\oled.o"
+".\beep.o"
 ".\stm32f4xx_spi.o"
 ".\stm32f4xx_usart.o"
 ".\stm32f4xx_tim.o"

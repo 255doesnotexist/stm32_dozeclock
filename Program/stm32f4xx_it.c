@@ -9,6 +9,7 @@
 #include "key.h"
 #include "led.h"
 #include "timer.h"
+#include "beep.h"
 #include "global.h"
 
 /*
@@ -16,7 +17,8 @@
 * Key1(PI8)的按键中断处理程序
 **************************************
 */
-uint16_t t = 1;
+uint32_t t = 1;
+extern uint8_t isPlaying;
 void EXTI9_5_IRQHandler(void)
 { 
     if (EXTI_GetITStatus(EXTI_Line8) != RESET) {
@@ -29,8 +31,12 @@ void EXTI9_5_IRQHandler(void)
 * Tim2的中断处理程序
 **************************************
 */
+extern uint16_t NowSheetTick;
+extern uint8_t isRinging;
+extern uint32_t Global_Clock;
 // 定时器中断服务程序 - 10ms中断，用于刷新界面和动画
 void TIM2_IRQHandler(void) {
+		++Global_Clock;
     if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET) {
          if(isCountingDown && !isPaused) {
                 if(countdownMilliseconds > 0) {
@@ -46,6 +52,10 @@ void TIM2_IRQHandler(void) {
                             countdownMilliseconds = 99;
                         } else {
                             // 时间到
+														dozeMinutes = 5; // 时间到了再加五分钟打盹闹钟
+														dozeSeconds = 0;
+														dozeMilliseconds = 0;
+													
                             isCountingDown = 0;
                             dozeButtonState = Button_StartDoze;
                             pauseButtonState = Button_PauseDoze;
@@ -54,7 +64,8 @@ void TIM2_IRQHandler(void) {
                             countdownMilliseconds = dozeMilliseconds;
                             isPaused = 0;
                             currentSelection = DozeCounting_StartDozeButton;
-                            PlayRing();
+                            NowSheetTick = 0;
+														isRinging = 1;
                         }
                     }
                 }
@@ -68,12 +79,18 @@ void TIM2_IRQHandler(void) {
 * Tim3的中断处理程序
 **************************************
 */
+uint16_t otime=1000, frqcount=0;
 void TIM3_IRQHandler(void)
 { 
 	if (TIM_GetITStatus(TIM3, TIM_IT_Update) == 1)  //检查中断标志是否为1
 	{
-		  //LedToggle(LED2);   //亮灭切换
+			if (isPlaying && isRinging) {
+				++frqcount;
+				if(frqcount>otime){
+					frqcount=0;
+					BeepToggle();
+				}
+			}
 		  TIM_ClearFlag(TIM3, TIM_IT_Update); //清除中断标志
 	}	
 }
-

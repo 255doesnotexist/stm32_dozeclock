@@ -13,12 +13,15 @@
 #include "led.h"
 #include "font.h"
 #include "global.h"
+#include "beep.h"
 
 // 全局变量
 Page currentPage = MainMenu;
 Selection currentSelection = MainMenu_EnterDozeCounting;
 DozeCountingButtonState dozeButtonState = Button_StartDoze;
 DozeCountingButtonState pauseButtonState = Button_PauseDoze;
+
+uint32_t Global_Clock = 0;
 
 uint8_t dozeMinutes = 0;
 uint8_t dozeSeconds = 5; // 默认5分钟
@@ -31,14 +34,77 @@ uint8_t countdownMilliseconds = 0;
 uint8_t isCountingDown = 0;
 uint8_t isPaused = 0;
 uint8_t isDozeTimeSettingMode = 0;
+uint8_t isPlaying = 0;
+uint8_t isRinging = 0;
 uint8_t dozeTimeSettingSelection = DozeTimeSetting_Minutes;
+uint16_t NowSheetTick = 0;
+
+// 宏定义音高（C2到C6）
+#define C2  65
+#define D2  73
+#define E2  82
+#define F2  87
+#define G2  98
+#define A2  110
+#define B2  123
+#define C3  131
+#define D3  147
+#define E3  165
+#define F3  175
+#define G3  196
+#define A3  220
+#define B3  247
+#define C4  262
+#define D4  294
+#define E4  330
+#define F4  349
+#define G4  392
+#define A4  440
+#define B4  494
+#define C5  523
+#define D5  587
+#define E5  659
+#define F5  698
+#define G5  784
+#define A5  880
+#define B5  988
+#define C6  1047
+
+// 宏定义拍子长度（单位：毫秒）
+#define WHOLE_NOTE 1000
+#define HALF_NOTE  500
+#define QUARTER_NOTE 250
+#define EIGHTH_NOTE 125
+
+// 乐谱定义
+int16_t RingSheet1[] = {C4, C4, G4, G4, A4, A4, G4, -1};  // 小星星
+int16_t RingSheet1Time[] = {QUARTER_NOTE, QUARTER_NOTE, QUARTER_NOTE, QUARTER_NOTE, QUARTER_NOTE, QUARTER_NOTE, HALF_NOTE, -1};
+
+int16_t RingSheet2[] = {E4, E4, F4, G4, G4, F4, E4, D4, C4, C4, D4, E4, E4, D4, D4, -1};  // 欢乐颂
+int16_t RingSheet2Time[] = {QUARTER_NOTE, QUARTER_NOTE, QUARTER_NOTE, QUARTER_NOTE, QUARTER_NOTE, QUARTER_NOTE, QUARTER_NOTE, QUARTER_NOTE, QUARTER_NOTE, QUARTER_NOTE, QUARTER_NOTE, QUARTER_NOTE, QUARTER_NOTE, QUARTER_NOTE, HALF_NOTE, -1};
+
+int16_t RingSheet3[] = {C4, G3, A3, E3, F3, C4, F3, G3, C4, G3, A3, E3, F3, C4, F3, G3, -1};  // 卡农片段
+int16_t RingSheet3Time[] = {QUARTER_NOTE, QUARTER_NOTE, QUARTER_NOTE, QUARTER_NOTE, QUARTER_NOTE, QUARTER_NOTE, QUARTER_NOTE, QUARTER_NOTE, QUARTER_NOTE, QUARTER_NOTE, QUARTER_NOTE, QUARTER_NOTE, QUARTER_NOTE, QUARTER_NOTE, QUARTER_NOTE, HALF_NOTE, -1};
+
+int16_t RingSheet4[] = {C5, C5, C5, C5, C5, -1};  // 闹钟声
+int16_t RingSheet4Time[] = {EIGHTH_NOTE, EIGHTH_NOTE, EIGHTH_NOTE, EIGHTH_NOTE, HALF_NOTE, -1};
+
+int16_t RingSheet5[] = {
+    G4, A4, C5, A4, E5, E5, D5, 0, G4, A4, C5, A4, D5, D5, C5, G4, F4, // Never gonna give you up Never gonna let you down
+    -1
+};
+
+int16_t RingSheet5Time[] = {
+    EIGHTH_NOTE, EIGHTH_NOTE, EIGHTH_NOTE, EIGHTH_NOTE, QUARTER_NOTE, QUARTER_NOTE, QUARTER_NOTE, 500, EIGHTH_NOTE, EIGHTH_NOTE, EIGHTH_NOTE, EIGHTH_NOTE, QUARTER_NOTE, QUARTER_NOTE, QUARTER_NOTE, // Never gonna give you up Never gonna let you down
+    -1
+};
+
+// 可根据需要添加播放函数，用于播放各个乐谱
 
 // 蜂鸣器相关
-int8_t *CurrentRingSheet = NULL; // 当前铃声
-int8_t RingSheet1[] = {1, 2, 3, 4, 5, -1}; // 示例铃声
-int8_t RingSheet2[] = {5, 4, 3, 2, 1, -1};
-int8_t RingSheet3[] = {1, 3, 5, 3, 1, -1};
-int8_t RingSheet4[] = {5, 3, 1, 3, 5, -1};
+int16_t *CurrentRingSheet = RingSheet2; // 当前铃声
+int16_t *CurrentRingSheetTime = RingSheet2Time; // 当前铃声
+ 
 
 // 动画相关
 int8_t aboutAnimationX[4] = {0, 30, 50, 80};
@@ -59,7 +125,7 @@ void UpdateDisplay(void);
 void TIM2_IRQHandler(void);
 void EXTI9_5_IRQHandler(void);
 void PlayRing(void);
-void Beep(uint8_t tone); // 假设的蜂鸣器驱动函数
+void Beep(uint16_t freq, uint16_t t); // 假设的蜂鸣器驱动函数
 
 //Delay program, unit: ms
 void delayms(uint32_t msnum)
@@ -70,7 +136,6 @@ void delayms(uint32_t msnum)
      for(i = 0 ; i < 25*1000 ; i++);
    } 
 }
-
 			
 //main program
 int main(void) 
@@ -80,11 +145,12 @@ int main(void)
 	LedInit();
 	KeyInit();
 	Tim2Init();
-	Tim3Init(5); //x*0.1秒
+	Tim3Init();
+//	Tim3Init(5); //x*0.1秒
 //	UartInit();
 //	LcdInit();    //Lcd和Oled二选一
 	OledInit();   //Lcd和Oled二选一
-	
+	BeepInit();
 	//中断系统初始化
 	NvicCfg();
 	KeyExtiCfg();
@@ -98,18 +164,20 @@ int main(void)
 *LCD 屏，规格：宽84×高48像素,  寻址范围：列号x = 0~83,  页号y = 0~5
 *OLED屏，规格：宽128×高64像素，寻址范围：列号x = 0~127, 页号y = 0~7 
 *********************************************************************/
+		SetFreq(440);
   OledClear();//清屏
+	isPlaying=0;
     // 主循环
     while (1) {
         UpdateDisplay();
-			
+			  PlayRing();
 				if(GetKey() != KEY_NO) {
 					delayms(20);
 					if(GetKey() != KEY_NO) HandleButtonPress();
 				}
-        if(isCountingDown && !isPaused) {
+        /*if(isCountingDown && !isPaused) {
              LedToggle(LED2);
-        }
+        }*/
     }
 }
 
@@ -634,6 +702,32 @@ void HandleButtonPress(void) {
 									// 超出边界循环回去
 									currentSelection = CustomRing_Sound4;
 								}
+                switch (currentSelection) {
+                    case CustomRing_Sound1:
+                        CurrentRingSheet = RingSheet1;
+                        CurrentRingSheetTime = RingSheet1Time;
+												NowSheetTick = 0;
+												isRinging = 1;
+                        break;
+                    case CustomRing_Sound2:
+                        CurrentRingSheet = RingSheet2;
+                        CurrentRingSheetTime = RingSheet2Time;
+												NowSheetTick = 0;
+												isRinging = 1;
+                        break;
+                    case CustomRing_Sound3:
+                        CurrentRingSheet = RingSheet3;
+                        CurrentRingSheetTime = RingSheet3Time;
+												NowSheetTick = 0;
+												isRinging = 1;
+                        break;
+                    case CustomRing_Sound4:
+                        CurrentRingSheet = RingSheet4;
+                        CurrentRingSheetTime = RingSheet4Time;
+												NowSheetTick = 0;
+												isRinging = 1;
+                        break;
+                }
                 break;
             case About:
                 // 任意键返回主菜单
@@ -694,6 +788,32 @@ void HandleButtonPress(void) {
 									// 超出边界循环回去
 									currentSelection = CustomRing_Sound1;
 								}
+                switch (currentSelection) {
+                    case CustomRing_Sound1:
+                        CurrentRingSheet = RingSheet1;
+                        CurrentRingSheetTime = RingSheet1Time;
+												NowSheetTick = 0;
+												isRinging = 1;
+                        break;
+                    case CustomRing_Sound2:
+                        CurrentRingSheet = RingSheet2;
+                        CurrentRingSheetTime = RingSheet2Time;
+												NowSheetTick = 0;
+												isRinging = 1;
+                        break;
+                    case CustomRing_Sound3:
+                        CurrentRingSheet = RingSheet3;
+                        CurrentRingSheetTime = RingSheet3Time;
+												NowSheetTick = 0;
+												isRinging = 1;
+                        break;
+                    case CustomRing_Sound4:
+                        CurrentRingSheet = RingSheet4;
+                        CurrentRingSheetTime = RingSheet4Time;
+												NowSheetTick = 0;
+												isRinging = 1;
+                        break;
+                }
                 break;
             case About:
                 // 任意键返回主菜单
@@ -730,6 +850,10 @@ void HandleButtonPress(void) {
                     case MainMenu_EnterAbout:
                         currentPage = About;
                         currentSelection = About_JinChenye;
+                        CurrentRingSheet = RingSheet5;
+                        CurrentRingSheetTime = RingSheet5Time;
+												NowSheetTick = 0;
+												isRinging = 1;
                         break;
                 }
 								while(GetKey() == KEY3);
@@ -768,6 +892,8 @@ void HandleButtonPress(void) {
                         dozeButtonState = Button_StartDoze;
                         pauseButtonState = Button_PauseDoze;
                          isPaused = 0;
+												isRinging = 0;
+												isPlaying = 0;
                         break;
                 }
 								while(GetKey() == KEY3);
@@ -791,26 +917,42 @@ void HandleButtonPress(void) {
                 switch (currentSelection) {
                     case CustomRing_Sound1:
                         CurrentRingSheet = RingSheet1;
+                        CurrentRingSheetTime = RingSheet1Time;
+												NowSheetTick = 0;
+												isRinging = 0;
                         break;
                     case CustomRing_Sound2:
                         CurrentRingSheet = RingSheet2;
+                        CurrentRingSheetTime = RingSheet2Time;
+												NowSheetTick = 0;
+												isRinging = 0;
                         break;
                     case CustomRing_Sound3:
                         CurrentRingSheet = RingSheet3;
+                        CurrentRingSheetTime = RingSheet3Time;
+												NowSheetTick = 0;
+												isRinging = 0;
                         break;
                     case CustomRing_Sound4:
                         CurrentRingSheet = RingSheet4;
+                        CurrentRingSheetTime = RingSheet4Time;
+												NowSheetTick = 0;
+												isRinging = 0;
                         break;
                 }
                 currentPage = MainMenu;
                 currentSelection = MainMenu_EnterDozeCounting;
 								while(GetKey() == KEY3);
+								isRinging = 0;
+								isPlaying = 0;
                 break;
             case About:
                 // 任意键返回主菜单
                 currentPage = MainMenu;
                 currentSelection = MainMenu_EnterDozeCounting;
 								while(GetKey() == KEY3);
+								isRinging = 0;
+								isPlaying = 0;
                 break;
         }
     }
@@ -818,44 +960,46 @@ void HandleButtonPress(void) {
 		while(GetKey() != KEY_NO);
 }
 
+void BeepTickingOn(int16_t freq){
+    SetFreq(freq); 
+    isPlaying = 1;
+}
 
+void BeepTickingOff(){
+    isPlaying = 0;
+}
 
 // 播放铃声
 void PlayRing(void) {
-		int i, k;
-    if (CurrentRingSheet != NULL) {
-        i = 0;
-        while (CurrentRingSheet[i] != -1) {
-            Beep(CurrentRingSheet[i]);
-            
-            for(k = 0; k < 2000000; k++); // 粗略延时
-            i++;
-        }
+	  static int32_t count = 0, Last_Clock = 0, Last_SheetTick = -1;
+		if (!isRinging) return;
+	
+    if (CurrentRingSheet[NowSheetTick] != -1 && Last_SheetTick != NowSheetTick) {
+        BeepTickingOn(CurrentRingSheet[NowSheetTick]);
+				Last_SheetTick = NowSheetTick;
+				count = CurrentRingSheetTime[NowSheetTick] / 10;
+				Last_Clock = Global_Clock;
     }
+		//delayms(100);
+		if (Global_Clock - Last_Clock >= count) {
+				BeepTickingOff();
+				delayms(15);
+				++NowSheetTick;
+				count = 0;
+		}
+		if (CurrentRingSheet[NowSheetTick] == -1) {
+				BeepTickingOff();
+				isRinging = 0;
+		}
 }
 
-// 蜂鸣器发声 - 占位符
-void Beep(uint8_t tone) {
-    // TODO: 实现蜂鸣器驱动
+void Beep(uint16_t freq, uint16_t t){
+    isPlaying = 1;
+    SetFreq(freq);  // C
+    delayms(t);
+    isPlaying = 0;
+    delayms(10);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
