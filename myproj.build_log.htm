@@ -1,0 +1,121 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Project:</h2>
+Z:\Document\stm32_example\E4.2_SPI&OLED&Timer -Demo\myproj.uvproj
+Project File Date:  12/26/2024
+
+<h2>Output:</h2>
+Build target 'E4.1'
+compiling stm32f4xx_it.c...
+Program\global.h(71): warning:  #1-D: last line of file ends without a newline
+  #endif
+Program\stm32f4xx_it.c(57): warning:  #223-D: function "PlayRing" declared implicitly
+                              PlayRing();
+Program\stm32f4xx_it.c: 2 warnings, 0 errors
+linking...
+Program Size: Code=14160 RO-data=4720 RW-data=92 ZI-data=1636  
+FromELF: creating hex file...
+".\myproj.axf" - 0 Error(s), 2 Warning(s).
+Load "Z:\\Document\\stm32_example\\E4.2_SPI&OLED&Timer -Demo\\myproj.axf" 
+Erase Done.
+Programming Done.
+Verify OK.
+Application running ...
+Load "Z:\\Document\\stm32_example\\E4.2_SPI&OLED&Timer -Demo\\myproj.axf" 
+Erase Done.
+Programming Done.
+Verify OK.
+Application running ...
+ 4;
+Program\main.c: 6 warnings, 0 errors
+linking...
+Program Size: Code=14164 RO-data=4720 RW-data=92 ZI-data=1636  
+FromELF: creating hex file...
+".\myproj.axf" - 0 Error(s), 6 Warning(s).
+Load "Z:\\Document\\stm32_example\\E4.2_SPI&OLED&Timer -Demo\\myproj.axf" 
+Erase Done.
+Programming Done.
+Verify OK.
+Application running ...
+LED&Timer -Demo\\myproj.axf" 
+Erase Done.
+Programming Done.
+Verify OK.
+Application running ...
+#endif
+Program\main.c(85): warning:  #223-D: function "UartInit" declared implicitly
+        UartInit();
+Program\main.c(79): warning:  #177-D: variable "Timelevel" was declared but never referenced
+        uint16_t Timelevel;
+Program\main.c(273): warning:  #177-D: variable "timeBuffer" was declared but never referenced
+      uint8_t timeBuffer[16]; 
+Program\main.c(612): warning:  #188-D: enumerated type mixed with another type
+                  currentSelection = (currentSelection - 1 + 4) % 4;
+Program\main.c(672): warning:  #188-D: enumerated type mixed with another type
+                  currentSelection = (currentSelection + 1) % 4;
+Program\main.c: 7 warnings, 8 errors
+".\myproj.axf" - 8 Error(s), 7 Warning(s).
+Target not created
+1) % 4;
+Program\main.c: 7 warnings, 9 errors
+compiling stm32f4xx_it.c...
+compiling key.c...
+compiling oled.c...
+Driver\oled.h(46): warning:  #1-D: last line of file ends without a newline
+   
+Driver\oled.c: 1 warning, 0 errors
+".\myproj.axf" - 9 Error(s), 8 Warning(s).
+Target not created
+
+              OledShowFont16X16R(ConvertRowToPixelCN(i+1), ConvertLineToPixel(3), FMainMenu_EnterAbout + i*32);
+Program\main.c(341): warning:  #223-D: function "OledShowFont16X16R" declared implicitly
+                                        OledShowFont16X16R(ConvertRowToPixelCN(i), ConvertLineToPixel(2), (dozeButtonState == Button_StartDoze ? FCounting_StartDoze : FCounting_StopDoze) + i*32);
+Program\main.c(352): warning:  #223-D: function "OledShowFont16X16R" declared implicitly
+                                        OledShowFont16X16R(ConvertRowToPixelCN(i + 3), ConvertLineToPixel(2), (pauseButtonState == Button_PauseDoze ? FCounting_PauseDoze : FCounting_ResumeDoze) + i*32);
+Program\main.c(363): warning:  #223-D: function "OledShowFont16X16R" declared implicitly
+                                        OledShowFont16X16R(ConvertRowToPixelCN(i + 6), ConvertLineToPixel(2), FCounting_Exit + i*32);
+Program\main.c(284): warning:  #177-D: variable "timeBuffer" was declared but never referenced
+      uint8_t timeBuffer[16]; 
+Program\main.c(390): warning:  #223-D: function "OledShowFont8X16R" declared implicitly
+                                OledShowFont8X16R(0 + COUNTING_OFFSET, 1, &Decimal[dozeMinutes / 10 * 16]);
+Program\main.c(399): warning:  #223-D: function "OledShowFont8X16R" declared implicitly
+                                OledShowFont8X16R(24 + COUNTING_OFFSET, 1, &Decimal[dozeSeconds / 10 * 16]);
+Program\main.c(409): warning:  #223-D: function "OledShowFont8X16R" declared implicitly
+                                OledShowFont8X16R(48 + COUNTING_OFFSET, 1, &Decimal[dozeMilliseconds / 10 * 16]);
+Program\main.c(421): warning:  #223-D: function "OledShowFont16X16R" declared implicitly
+                                        OledShowFont16X16R(ConvertRowToPixelCN(i + 3), ConvertLineToPixel(2), FDozeTimeSetting_Done + i*32);
+Program\main.c(474): warning:  #223-D: function "OledShowFont16X16R" declared implicitly
+                                        OledShowFont16X16R(ConvertRowToPixelCN(i), ConvertLineToPixel(0), FCustomRing_Sound1 + i*32);
+Program\main.c(476): warning:  #223-D: function "OledShowFont8X16R" declared implicitly
+                                OledShowFont8X16R(ConvertRowToPixelCN(2), ConvertLineToPixel(0), FCustomRing_Sound1 + 2*32);
+Program\main.c(487): warning:  #223-D: function "OledShowFont16X16R" declared implicitly
+                                        OledShowFont16X16R(ConvertRowToPixelCN(i), ConvertLineToPixel(1), FCustomRing_Sound2 + i*32);
+Program\main.c(489): warning:  #223-D: function "OledShowFont8X16R" declared implicitly
+                                OledShowFont8X16R(ConvertRowToPixelCN(2), ConvertLineToPixel(1), FCustomRing_Sound2 + 2*32);
+Program\main.c(499): warning:  #223-D: function "OledShowFont16X16R" declared implicitly
+                                        OledShowFont16X16R(ConvertRowToPixelCN(i), ConvertLineToPixel(2), FCustomRing_Sound3 + i*32);
+Program\main.c(501): warning:  #223-D: function "OledShowFont8X16R" declared implicitly
+                                OledShowFont8X16R(ConvertRowToPixelCN(2), ConvertLineToPixel(2), FCustomRing_Sound3 + 2*32);
+Program\main.c(511): warning:  #223-D: function "OledShowFont16X16R" declared implicitly
+                                        OledShowFont16X16R(ConvertRowToPixelCN(i), ConvertLineToPixel(3), FCustomRing_Sound4 + i*32);
+Program\main.c(513): warning:  #223-D: function "OledShowFont8X16R" declared implicitly
+                                OledShowFont8X16R(ConvertRowToPixelCN(2), ConvertLineToPixel(3), FCustomRing_Sound4 + 2*32);
+Program\main.c(578): warning:  #223-D: function "OledShowFont1X16" declared implicitly
+                                OledShowFont1X16(aboutAnimationX[0] - aboutAnimationDirection[0] + ConvertRowToPixelCN(i), ConvertLineToPixel(0), eraser);
+Program\main.c(623): warning:  #188-D: enumerated type mixed with another type
+                  currentSelection = (currentSelection - 1 + 4) % 4;
+Program\main.c(683): warning:  #188-D: enumerated type mixed with another type
+                  currentSelection = (currentSelection + 1) % 4;
+Program\main.c(717): error:  #20: identifier "KEY3_PORT" is undefined
+      } else if (GPIO_ReadInputDataBit(KEY3_PORT, KEY3_Pin) == 0) {
+Program\main.c(717): error:  #20: identifier "KEY3_Pin" is undefined
+      } else if (GPIO_ReadInputDataBit(KEY3_PORT, KEY3_Pin) == 0) {
+Program\main.c(721): error:  #20: identifier "KEY3" is undefined
+                                                                while(GetKey() == KEY3);
+Program\main.c(747): error:  #20: identifier "KEY3" is undefined
+                                                                while(GetKey() == KEY3);
+Program\main.c: 27 warnings, 13 errors
+".\myproj.axf" - 13 Error(s), 27 Warning(s).
+Target not created

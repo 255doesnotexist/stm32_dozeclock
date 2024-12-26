@@ -1,0 +1,15 @@
+CMSIS核心文件:
+ core_cm4.h  : 内核功能的定义，比如NVIC相关寄存器的结构体和Systick配置
+ core_cmFunc.h : 内核核心功能接口头文件
+ core_cmInstr.h : 包含一些内核核心专用指令
+ core_cmSimd.h : 包含与编译器相关的处理
+
+---------------------
+
+stm32f4xx.h : 片上外设访问层头文件，包含了寄存器结构体的定义
+
+system_stm32f4xx.h&.c :片上外设接入层文件，包含了系统时钟的设置 ,
+                                         系统启动所调用的SystemInit()函数也在其中。
+
+startup_stm32f40_41xxx.s : 启动文件，进行堆栈初始化、中断向量及函数定义；调用系统
+                                              初始化函数SystemInit，并引导进入main函数。

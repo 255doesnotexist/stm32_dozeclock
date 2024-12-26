@@ -1,0 +1,8 @@
+misc.h&.c : NVICÖÐ¶Ï¹ÜÀí£¬ ÈçÊ¹ÄÜ¡¢·Ö×éµÈ¡£é
+
+stm32f4xx_ppp.h£ºSTM32Æ¬ÉÏÍâÉèÍ·ÎÄ¼þ¡£ÕâÀïµÄpppÖ»ÊÇÒ»¸ö±êÊ¶·û£¬ÔÚÊµ¼ÊÉÏÊÇ¾ßÌåµÄÍâÉèÃû×Ö£¬ÈçADC£¬DMAµÈ¡£
+                     
+stm32f4xx_ppp.c£ºSTM32Æ¬ÉÏÍâÉèÍâÉèÔ´ÎÄ¼þ¡£°üº¬ÁË²Ù×÷pppÍâÉèµÄ¸÷ÖÖº¯Êý¡£
+       
+(ÌáÊ¾£ºÉÏÊöÁ½¸öÎÄ¼þ¿É¸ù¾Ý¹¤³ÌÊµ¼ÊÇé¿ö½øÐÐÉ¾¼õ£¬½ö±£ÁôËùÐèÍâÉèµÄÍ·ÎÄ¼þºÍÔ´ÎÄ¼þ¼´¿É¡££© 
+
