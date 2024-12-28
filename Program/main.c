@@ -989,7 +989,8 @@ void PlayRing(void) {
 		}
 		if (CurrentRingSheet[NowSheetTick] == -1) {
 				BeepTickingOff();
-				isRinging = 0;
+				// isRinging = 0;
+				NowSheetTick = 0;
 		}
 }
 

@@ -52,16 +52,14 @@ void TIM2_IRQHandler(void) {
                             countdownMilliseconds = 99;
                         } else {
                             // 时间到
-														dozeMinutes = 5; // 时间到了再加五分钟打盹闹钟
-														dozeSeconds = 0;
-														dozeMilliseconds = 0;
-													
                             isCountingDown = 0;
+													
+														countdownMinutes = 5; // 时间到了再加五分钟打盹闹钟
+														countdownSeconds = 0;
+														countdownMilliseconds = 0;
+													
                             dozeButtonState = Button_StartDoze;
                             pauseButtonState = Button_PauseDoze;
-                            countdownMinutes = dozeMinutes;
-                            countdownSeconds = dozeSeconds;
-                            countdownMilliseconds = dozeMilliseconds;
                             isPaused = 0;
                             currentSelection = DozeCounting_StartDozeButton;
                             NowSheetTick = 0;
